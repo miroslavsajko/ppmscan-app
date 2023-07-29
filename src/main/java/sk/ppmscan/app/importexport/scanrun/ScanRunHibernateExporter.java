@@ -45,33 +45,35 @@ public class ScanRunHibernateExporter implements ScanRunExporter {
 	}
 
 	private sk.ppmscan.app.importexport.scanrun.hibernate.ScanRun map(ScanRun scanRun) {
-		sk.ppmscan.app.importexport.scanrun.hibernate.ScanRun mapped = new sk.ppmscan.app.importexport.scanrun.hibernate.ScanRun();
-		mapped.setScanTime(scanRun.getScanTime());
-		mapped.setManagers(scanRun.getManagers().stream().map(this::map).collect(Collectors.toList()));
-		return mapped;
+		sk.ppmscan.app.importexport.scanrun.hibernate.ScanRun mappedScanRun = new sk.ppmscan.app.importexport.scanrun.hibernate.ScanRun();
+		mappedScanRun.setScanTime(scanRun.getScanTime());
+		mappedScanRun.setManagers(scanRun.getManagers().stream().map(manager -> map(manager, mappedScanRun)).collect(Collectors.toList()));
+		return mappedScanRun;
 	}
 	
-	private sk.ppmscan.app.importexport.scanrun.hibernate.Manager map(Manager manager) {
-		sk.ppmscan.app.importexport.scanrun.hibernate.Manager mapped = new sk.ppmscan.app.importexport.scanrun.hibernate.Manager();
-		mapped.setManagerId(manager.getManagerId());
-		mapped.setNickname(manager.getNickname());
-		mapped.setRecentLogins(manager.getRecentLogins());
-		mapped.setUrl(manager.getUrl());
-		mapped.setTeams(manager.getTeams().stream().map(this::map).collect(Collectors.toList()));
-		return mapped;
+	private sk.ppmscan.app.importexport.scanrun.hibernate.Manager map(Manager manager, sk.ppmscan.app.importexport.scanrun.hibernate.ScanRun scanRun) {
+		sk.ppmscan.app.importexport.scanrun.hibernate.Manager mappedManager = new sk.ppmscan.app.importexport.scanrun.hibernate.Manager();
+		mappedManager.setManagerId(manager.getManagerId());
+		mappedManager.setNickname(manager.getNickname());
+		mappedManager.setRecentLogins(manager.getRecentLogins());
+		mappedManager.setUrl(manager.getUrl());
+		mappedManager.setTeams(manager.getTeams().stream().map(team -> map(team, mappedManager, scanRun)).collect(Collectors.toList()));
+		return mappedManager;
 	}
 	
-	private sk.ppmscan.app.importexport.scanrun.hibernate.Team map(Team team) {
-		sk.ppmscan.app.importexport.scanrun.hibernate.Team mapped = new sk.ppmscan.app.importexport.scanrun.hibernate.Team();
-		mapped.setName(team.getName());
-		mapped.setLeague(team.getLeague());
-		mapped.setLeagueCountry(team.getLeagueCountry());
-		mapped.setSport(team.getSport());
-		mapped.setTeamCountry(team.getTeamCountry());
-		mapped.setTeamStrength(team.getTeamStrength());
-		mapped.setUrl(team.getUrl());
-		mapped.setTeamId(team.getTeamId());
-		return mapped;
+	private sk.ppmscan.app.importexport.scanrun.hibernate.Team map(Team team, sk.ppmscan.app.importexport.scanrun.hibernate.Manager manager, sk.ppmscan.app.importexport.scanrun.hibernate.ScanRun scanRun) {
+		sk.ppmscan.app.importexport.scanrun.hibernate.Team mappedTeam = new sk.ppmscan.app.importexport.scanrun.hibernate.Team();
+		mappedTeam.setName(team.getName());
+		mappedTeam.setLeague(team.getLeague());
+		mappedTeam.setLeagueCountry(team.getLeagueCountry());
+		mappedTeam.setSport(team.getSport());
+		mappedTeam.setTeamCountry(team.getTeamCountry());
+		mappedTeam.setTeamStrength(team.getTeamStrength());
+		mappedTeam.setUrl(team.getUrl());
+		mappedTeam.setTeamId(team.getTeamId());
+		mappedTeam.setScanRun(scanRun);
+		mappedTeam.setManager(manager);
+		return mappedTeam;
 	}
 
 }
